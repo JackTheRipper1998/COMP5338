@@ -1,0 +1,137 @@
+Q1:
+
+CALL apoc.load.json("file:///Unites.json")
+YIELD value
+MERGE (u:Unites{code: value.code})
+SET u.title = value.title,
+    u.level = value.level,
+    u.prerequisites = value.prerequisites[0],
+    u.prohibited = apoc.text.join(value.prohibited, ' OR ');
+
+CALL apoc.load.json("file:///Unites.json")
+YIELD value
+MATCH (u: Unites), (u1: Unites {code: value.code})
+WHERE u.code IN value.prerequisites[2]
+CREATE (u1)-[r:PREREQUISITE]->(u)
+SET r.relation = 'OR';
+
+CALL apoc.load.json("file:///Unites.json")
+YIELD value
+MATCH (u: Unites), (u1: Unites {code: value.code})
+WHERE u.code IN value.prohibited
+CREATE (u1)-[r:PROHIBITED]->(u)
+SET r.relation = 'OR';
+
+CALL apoc.load.json("file:///Unites.json")
+YIELD value
+MATCH (u: Unites), (u1: Unites {code: value.code})
+WHERE u.code IN value.prerequisites[3]
+CREATE (u1)-[r:PREREQUISITE]->(u)
+SET r.relation = '(OR) AND';
+
+CALL apoc.load.json("file:///Unites.json")
+YIELD value
+MATCH (u: Unites), (u1: Unites {code: value.code})
+WHERE u.code IN value.prerequisites[4]
+CREATE (u1)-[r:PREREQUISITE]->(u)
+SET r.relation = 'AND(OR)';
+
+CALL apoc.load.json("file:///Unites.json")
+YIELD value
+MATCH (u: Unites), (u1: Unites {code: value.code})
+WHERE u.code IN value.prerequisites[1]
+CREATE (u1)-[r:PREREQUISITE]->(u)
+SET r.relation = 'ONLY';
+
+
+Q2:
+
+MATCH (u: Unites)
+WHERE NOT EXISTS(u.prerequisites)
+RETURN u
+
+MATCH (u: Unites)
+WHERE EXISTS(u.prohibited)
+RETURN u
+
+MATCH (u: Unites)
+WHERE (u.prerequisites) CONTAINS "OR" AND NOT ((u.prerequisites)CONTAINS "AND")
+RETURN u;
+
+MATCH (u: Unites)
+WHERE (u.prerequisites) CONTAINS "OR" AND (u.prerequisites) CONTAINS "AND"
+RETURN u;
+
+Q3:
+CREATE (s: Student {Name: "Malcolm", CompletedUnites: ["CSSE1001", "CSSE2002", "INFS1200", "CSSE2010"]})
+
+MATCH (s: Student{Name: "Malcolm"})
+WITH s.CompletedUnites as cu
+MATCH  (u: Unites)
+WHERE [x IN u.code WHERE x in cu]
+WITH collect(u.prohibited CONTAINS 'ENGG1001') AS check
+RETURN ALL(x IN check WHERE x = false) 
+
+Q4:
+CREATE (s: Student {Name: "Peter", CompletedUnites: ["CSSE1001", "CSSE2010", "INFS1200", "MATH1050"]})
+
+MATCH (s: Student{Name: "Peter"}), (u: Unites{code: "COMP4500"})
+WITH s.CompletedUnites as cu, u
+WITH split(u.prerequisites, "AND")as pre, cu
+RETURN
+CASE SIZE(pre)
+WHEN 2
+THEN ANY(x IN cu WHERE pre[0] contains x) AND ANY(x IN cu WHERE pre[1] contains x)
+WHEN 1
+THEN ANY(x IN cu WHERE pre[0] contains x)
+ELSE false
+END as result
+
+Q5:
+CREATE (s: Student {Name: "Steven", Level_1000: ["CSSE1001", "INFS1200", "MATH1061", "DECO1400", "MATH1051", "MATH1050", "ENGG1001", "ECON1010", "JAPN1011"], Level_2000: ["COMP2048", "CSSE2002", "CSSE2010", "CSSE2310", "DECO2500", "INFS2200", "SCIE2100"], Level_3000: ["DECO3801", "COMP3506", "COMS3200", "CYBR3000", "COMP3501"], Level_4000: ["COMP4702", "COMP4500", "BISM4203"], Total_cp: 144})
+
+MATCH (s: Student{Name: "Steven"})
+RETURN SIZE(s.Level_1000) >= 8 as level_1000_checking, SIZE(s.Level_2000) >= 6 as level_2000_checking,SIZE(s.Level_3000) >= 6 as level_3000_checking,s.Total_cp >= 144 as total_cp_checking
+
+Q6:
+MATCH p = (course) - [:PREREQUISITE *2..3] -> (preCourse)
+WHERE course.code = "COMP4500" AND substring(preCourse.code, 4, 1) = '1'
+RETURN p
+
+Q7:
+MATCH () - [:PREREQUISITE *] -> (preCourse) 
+WITH preCourse, count(preCourse) as times
+ORDER BY times DESC
+RETURN collect(preCourse)[0] as course, max(times)
+
+Q8:
+MATCH (n)
+DETACH DELETE n
+
+Delete relationships:
+
+MATCH ()-[r:PREREQUISITE]->()
+DELETE r
+
+Delete single node:
+
+MATCH (n:Student {Name: "Malcolm"})
+DELETE n
+
+<strong><code>person.json</code></strong>
+
+      <ul>
+        <li>Selma and Rana: they are siblings</li>
+        <li>Selma and Charlie: they are not siblings </li>
+      </ul>
+
+MATCH ({name: '<span value-key="p1">Selma</span>'}) -[:CHILD_OF]->(p)
+    WITH collect(p) as parents
+    RETURN 
+      ANY(p in parents 
+        WHERE exists(
+          ({name: '<span value-key="p2">Rana</span>'})-[:CHILD_OF]->(p)
+        )
+      ) as sibling
+return any(x IN cu WHERE pre[0] contains x) AND any(x IN cu WHERE pre[1] contains x)
+

@@ -1,0 +1,312 @@
+[
+    {
+        "code": "CSSE1001",
+        "title": "Introduction to Software Engineering",
+        "cp": 6,
+        "level": 1000,
+        "prohibited": ["COMP1502", "ENGG1001"]
+    }, 
+    
+    {
+        "code": "INFS1200",
+        "title": "Introduction to Information Systems",
+        "cp": 6,
+        "level": 1000,
+        "prohibited": ["BISM2207", "MGTS3203"]
+    },
+
+    {
+        "code": "MATH1061",
+        "title": "Discrete Mathematics",
+        "cp": 6,
+        "level": 1000,
+        "prerequisites": [
+            "MATH1051",
+            ["MATH1051"],
+            [],
+            [],
+            []
+         ]
+    },
+
+    {
+        "code": "DECO1400",
+        "title": "Introduction to Web Design",
+        "cp": 6,
+        "level": 1000
+    },
+
+    {
+        "code": "MATH1051",
+        "title": "Calculus & Linear Algebra I",
+        "cp": 6,
+        "level": 1000,
+        "prerequisites": [
+                            "MATH1050",
+                            ["MATH1050"],
+                            [],
+                            [],
+                            []
+                         ],
+        "prohibited": ["MATH1071"]
+    },
+
+    {
+        "code": "MATH1050",
+        "title": "Mathematical Foundations II",
+        "cp": 6,
+        "level": 1000,
+        "prerequisites": [
+                            "MATH1040",
+                            ["MATH1040"],
+                            [],
+                            [],
+                            []
+                         ],
+        "prohibited": ["MATH1052"]
+    },
+
+    {
+        "code": "ENGG1001",
+        "title": "Programming for Engineers",
+        "cp": 6,
+        "level": 1000,
+        "prohibited": ["CSSE1001"]
+    }, 
+
+    {
+        "code": "COMP2048",
+        "title": "Theory of Computing",
+        "cp": 6,
+        "level": 2000,
+        "prerequisites": [
+                            "MATH1061 AND (CSSE1001 OR ENGG1001)",
+                            [],
+                            [],
+                            ["MATH1061"],
+                            ["CSSE1001", "ENGG1001"]
+                         ]
+    },
+
+    {
+        "code": "CSSE2002",
+        "title": "Programming in the Large",
+        "cp": 6,
+        "level": 2000,
+        "prerequisites": [
+                            "CSSE1001 or ENGG1001",
+                            [],
+                            ["CSSE1001", "ENGG1001"],
+                            [],
+                            []
+                         ],
+        "prohibited": ["COMP2500"]
+    },
+
+    {
+        "code": "CSSE2010",
+        "title": "Introduction to Computer Systems",
+        "cp": 6,
+        "level": 2000,
+        "prerequisites": [
+                            "CSSE1001 or ENGG1001",
+                            [],
+                            ["CSSE1001", "ENGG1001"],
+                            [],
+                            []
+                         ],
+        "prohibited": ["COMP1300", "COMP2303", "COMP2302"]
+    },
+
+    {
+        "code": "CSSE2310",
+        "title": "Computer Systems Principles and Programming",
+        "cp": 6,
+        "level": 2000,
+        "prerequisites": [
+                            "(CSSE1001 OR ENGG1001) AND (CSSE1000 OR CSSE2010)",
+                            [],
+                            [],
+                            ["CSSE1001", "ENGG1001"],
+                            ["CSSE1000", "CSSE2010"]
+                         ],
+        "prohibited": ["COMP2303", "COMP2302"]
+    },
+
+    {
+        "code": "DECO2500",
+        "title": "Human-Computer Interaction",
+        "cp": 6,
+        "level": 2000,
+        "prerequisites": [
+                            "DECO1400 OR CSSE1001 OR ENGG1001",
+                            [],
+                            ["DECO1400", "CSSE1001", "ENGG1001"],
+                            [],
+                            []
+                         ],
+        "prohibited": ["COMP3501", "COMP2302"]
+    },
+
+    {
+        "code": "INFS2200",
+        "title": "Relational Database Systems",
+        "cp": 6,
+        "level": 2000,
+        "prerequisites": [
+                            "INFS1200",
+                            ["INFS1200"],
+                            [],
+                            [],
+                            []
+                         ]
+    },
+
+    {
+        "code": "COMP3506",
+        "title": "Algorithms & Data Structures",
+        "cp": 6,
+        "level": 3000,
+        "prerequisites": [
+                            "(CSSE2002 OR MATH1061) AND (CSSE2010 OR STAT2202))",
+                            [],
+                            [],
+                            ["CSSE2002", "MATH1061"],
+                            ["CSSE2010", "STAT2202"]
+                         ]
+    },
+
+    {
+        "code": "DECO3801",
+        "title": "Design Computing Studio 3 - Build",
+        "cp": 6,
+        "level": 3000,
+        "prerequisites": [
+                            "CSSE2002 OR INFS2200 OR DECO2500",
+                            [],
+                            ["CSSE2002", "INFS2200", "DECO2500"],
+                            [],
+                            []
+                         ],
+        "prohibited": ["CSSE3004", "CSSE3005", "CSSE7024"]
+    },
+
+    {
+        "code": "COMS3200",
+        "title": "Computer Networks I",
+        "cp": 6,
+        "level": 3000,
+        "prerequisites": [
+                            "COMP2303 OR CSSE2310",
+                            [],
+                            ["COMP2303", "CSSE2310"],
+                            [],
+                            []
+                         ]
+    },
+
+    {
+        "code": "CYBR3000",
+        "title": "Information Security",
+        "cp": 6,
+        "level": 3000,
+        "prerequisites": [
+                            "CSSE2310",
+                            ["CSSE2310"],
+                            [],
+                            [],
+                            []
+                         ],
+        "prohibited": ["COMS3000"]                 
+    },
+
+    {
+        "code": "COMP3501",
+        "title": "Human-Computer Interaction",
+        "cp": 6,
+        "level": 3000,
+        "prerequisites": [
+                            "COMP2500 OR CSSE2002 OR CSSE2004 OR IENV1802",
+                            [],
+                            ["COMP2500", "CSSE2002", "CSSE2004", "IENV1802"],
+                            [],
+                            []
+                         ],
+        "prohibited": ["DECO3801"]                 
+    },
+
+    {
+        "code": "INFS3200",
+        "title": "Advanced Database Systems",
+        "cp": 6,
+        "level": 3000,
+        "prerequisites": [
+                            "INFS2200",
+                            ["INFS2200"],
+                            [],
+                            [],
+                            []
+                         ]
+    },
+
+    {
+        "code": "COMP4702",
+        "title": "Machine Learning",
+        "cp": 6,
+        "level": 4000,
+        "prerequisites": [
+                            "(CSSE1001 or ENGG1001) and (MATH1051 or MATH1071)",
+                            [],
+                            [],
+                            ["CSSE1001", "ENGG1001"],
+                            ["MATH1051", "MATH1071"]
+                         ],
+        "prohibited": ["COMP3700", "ELEC4700", "COGS4021"]         
+    },
+
+    {
+        "code": "COMP4500",
+        "title": "Advanced Algorithms & Data Structures",
+        "cp": 6,
+        "level": 4000,
+        "prerequisites": [
+                            "COMP3506",
+                            ["COMP3506"],
+                            [],
+                            [],
+                            []
+                         ]
+    },
+
+    {
+        "code": "SCIE2100",
+        "title": "Bioinformatics 1: Introduction",
+        "cp": 6,
+        "level": 2000,
+        "prerequisites": [
+                            "(SCIE1000 OR STAT1201) AND (MATH1051 OR CSSE1001)",
+                            [],
+                            [],
+                            ["SCIE1000", "STAT1201"],
+                            ["MATH1051", "CSSE1001"]
+                         ],
+        "prohibited": ["COSC2000"]         
+    },
+
+    {
+        "code": "JAPN1011",
+        "title": "Foundational Japanese 1",
+        "cp": 6,
+        "level": 1000,
+        "prohibited": ["JAPN1010"]         
+    },
+
+    {
+        "code": "ECON1010",
+        "title": "Introductory Microeconomics",
+        "cp": 6,
+        "level": 1000,
+        "prohibited": ["ECON1011", "ECON2011"]         
+    }
+
+]

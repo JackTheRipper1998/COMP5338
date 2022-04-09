@@ -1,0 +1,374 @@
+<article class="guide" >
+  <carousel class="deck container-fluid">
+    <slide class="row-fluid">
+      <div class="col-sm-12>
+        <h3>JSON loading Example</h3>
+        <p class="lead">Below are the requirements for a three year <strong><code>Bachelor of Computer Science</code></strong> degree.
+        </p>
+        <p>Complete at least 144cp comprising:</p>
+        <ol class="big">
+          <li>at least 48cp at 1000 level</li>
+          <li>at least 36cp at 2000 level</li>
+          <li>at least 36cp at 3000 level</li>
+          <li>the rest at any level</li>
+      </ol>
+      <p> </p>
+      <p> </p>
+      <p>In the following slides It is going to build a graph representing units offered in University of Kingslanding and their relationships.
+       Also It will design a few queries to show that the graph can be used to check degree and unit rules.</p>
+    </div>
+   </slide>
+    
+
+  <slide class="row-fluid">
+    <div class="col-sm-3">
+      <h3>Graph Building</h3>
+      <p>It will provide six queries to build a graph containing units and their relationships.  The data will load from <code>Unites.json</code> file containing units information.  Each node in this graph represents different course which contain <code>unite code, title, cp, level, prerequisites, prohibited </code>information.  And there is two different relationships which are <code>PREREQUISITE</code> and <code>PROHIBITED, in PREREQUISITE </code></strong>there are three different types: <code>'OR', '(OR) AND', 'AND(OR)' and 'ONLY'</code>.
+      </br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></p>
+    </div>
+	  <div class="col-sm-8">
+      <figure>
+        <pre class="pre-scrollable code runnable">
+        CALL apoc.load.json("file:///Unites.json")
+          YIELD value
+          MERGE (u:Unites{code: value.code})
+          SET u.title = value.title,
+              u.level = value.level,
+              u.prerequisites = value.prerequisites[0],
+              u.prohibited = apoc.text.join(value.prohibited, ' OR ');
+        </pre>
+        <figcaption>Load unites node</figcaption>
+      </figure>
+    </div>
+    <div class="col-sm-8">
+      <figure>
+        <pre class="pre-scrollable code runnable">
+        CALL apoc.load.json("file:///Unites.json")
+          YIELD value
+          MATCH (u: Unites), (u1: Unites {code: value.code})
+          WHERE u.code IN value.prerequisites[2]
+          CREATE (u1)-[r:PREREQUISITE]->(u)
+          SET r.relation = 'OR';
+        </pre>
+        <figcaption>Add PREREQUISITE relationships type 'OR'</figcaption>
+      </figure>
+    </div>
+    <div class="col-sm-8">
+      <figure>
+        <pre class="pre-scrollable code runnable">
+        CALL apoc.load.json("file:///Unites.json")
+          YIELD value
+          MATCH (u: Unites), (u1: Unites {code: value.code})
+          WHERE u.code IN value.prohibited
+          CREATE (u1)-[r:PROHIBITED]->(u)
+          SET r.relation = 'OR';
+        </pre>
+        <figcaption>Add PROHIBITED relationships</figcaption>
+      </figure>
+    </div>
+    <div class="col-sm-8">
+      <figure>
+        <pre class="pre-scrollable code runnable">
+        CALL apoc.load.json("file:///Unites.json")
+          YIELD value
+          MATCH (u: Unites), (u1: Unites {code: value.code})
+          WHERE u.code IN value.prerequisites[3]
+          CREATE (u1)-[r:PREREQUISITE]->(u)
+          SET r.relation = '(OR) AND';
+        </pre>
+        <figcaption>Add PREREQUISITE relationships type '(OR) AND'</figcaption>
+      </figure>
+    </div>
+    <div class="col-sm-8">
+      <figure>
+        <pre class="pre-scrollable code runnable">
+        CALL apoc.load.json("file:///Unites.json")
+          YIELD value
+          MATCH (u: Unites), (u1: Unites {code: value.code})
+          WHERE u.code IN value.prerequisites[4]
+          CREATE (u1)-[r:PREREQUISITE]->(u)
+          SET r.relation = 'AND(OR)';
+        </pre>
+        <figcaption>Add PREREQUISITE relationships type 'AND(OR)'</figcaption>
+      </figure>
+    </div>
+    <div class="col-sm-8">
+      <figure>
+        <pre class="pre-scrollable code runnable">
+        CALL apoc.load.json("file:///Unites.json")
+          YIELD value
+          MATCH (u: Unites), (u1: Unites {code: value.code})
+          WHERE u.code IN value.prerequisites[1]
+          CREATE (u1)-[r:PREREQUISITE]->(u)
+          SET r.relation = 'ONLY';
+        </pre>
+        <figcaption>Add PREREQUISITE relationships type 'ONLY'</figcaption>
+      </figure>
+    </div>
+  </slide>
+
+  <slide class="row-fluid">
+    <div class="col-sm-3">
+      <h3>Graph Inspection</h3>
+      <p>In this slide, include some queries to show that the graph contains units with the following features:
+      </p>
+      <ol class="big">
+          <li> Has no prerequisite</li>
+          <li> Has a prohibition list</li>
+          <li> Has a list of prerequisites units linked by OR operators</li>
+          <li> Has a list of prerequisites units linked by AND and OR operators</li>
+      </ol>
+      <p>
+      </br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br>
+      </p>
+    </div>
+
+    <div class="col-sm-8">
+      <figure>
+        <pre class="pre-scrollable code runnable" >
+        MATCH (u: Unites)
+          WHERE NOT EXISTS(u.prerequisites)
+          RETURN u
+        </pre>
+      </figure>
+      <figcaption>Has no prerequisite</figcaption>
+    </div>
+    <div class="col-sm-8">
+      <figure>
+        <pre class="pre-scrollable code runnable" >
+        MATCH (u: Unites)
+          WHERE EXISTS(u.prohibited)
+          RETURN u
+        </pre>
+      </figure>
+      <figcaption>Has a prohibition list</figcaption>
+    </div>
+    <div class="col-sm-8">
+      <figure>
+        <pre class="pre-scrollable code runnable" >
+        MATCH (u: Unites)
+          WHERE (u.prerequisites) CONTAINS "OR" AND NOT 
+          ((u.prerequisites)CONTAINS "AND")
+          RETURN u;
+        </pre>
+      </figure>
+      <figcaption>Has a list of prerequisites units linked by OR operators</figcaption>
+    </div>
+    <div class="col-sm-8">
+      <figure>
+        <pre class="pre-scrollable code runnable" >
+        MATCH (u: Unites)
+          WHERE (u.prerequisites) CONTAINS "OR" AND (u.prerequisites) 
+          CONTAINS "AND"
+          RETURN u;
+        </pre>
+      </figure>
+      <figcaption>Has a list of prerequisites units linked by AND and OR operators</figcaption>
+    </div>
+  </slide>
+
+  <slide class="row-fluid">
+    <div class="col-sm-3">
+      <h3>Prohibition Rule</h3>
+      <p>In this slide, The first query creates a Student node which name is <code>Malcolm</code>, has studied <code>CSSE1001, CSSE2002, INFS1200, CSSE2010</code>.
+      The second query will check if <code>CSSE2310</code> can be chosen by Malcolm. The third query will check if <code>ENGG1001</code> can be chosen by Malcolm.
+      </br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br>
+      </p>
+    </div>
+    <div class="col-sm-8">
+      <figure>
+        <pre class="pre-scrollable code runnable">
+        CREATE (s: Student {Name: "Malcolm", CompletedUnites: 
+          ["CSSE1001", "CSSE2002", "INFS1200", "CSSE2010"]})
+        </pre>
+      </figure>
+      <figcaption>Create a Student node</figcaption>
+    </div>
+    <div class="col-sm-8">
+      <figure>
+        <pre class="pre-scrollable code runnable">
+        MATCH (s: Student{Name: "Malcolm"})
+          WITH s.CompletedUnites as cu
+          MATCH  (u: Unites)
+          WHERE [x IN u.code WHERE x in cu]
+          WITH collect(u.prohibited CONTAINS 'CSSE2310') AS check
+          RETURN ALL(x IN check WHERE x = false) 
+        </pre>
+      </figure>
+      <figcaption>Check if CSSE2310 can be chosen</figcaption>
+    </div>
+    <div class="col-sm-8">
+      <figure>
+        <pre class="pre-scrollable code runnable">
+        MATCH (s: Student{Name: "Malcolm"})
+          WITH s.CompletedUnites as cu
+          MATCH  (u: Unites)
+          WHERE [x IN u.code WHERE x in cu]
+          WITH collect(u.prohibited CONTAINS 'ENGG1001') AS check
+          RETURN ALL(x IN check WHERE x = false) 
+        </pre>
+      </figure>
+      <figcaption>Check if ENGG1001 can be chosen</figcaption>
+    </div>
+  </slide>
+
+  <slide class="row-fluid">
+    <div class="col-sm-3">
+      <h3>Prerequisite Rule</h3>
+      <p>In this slide, it will write a query to insert one student’s information in the graph. The student should have completed some units. The units completed by the student should:
+      </p>
+      <ol class="big">
+          <li> Satisfy the prerequisites of a unit (A) with only OR linked prerequisites;</li>
+          <li> Satisfy the prerequisites of another unit (B) with both AND and OR linked prerequisites;</li>
+          <li> does not satisfy the prerequisites of a third unit (C) with both AND and OR
+linked prerequisites.</li>
+      </ol>
+      <p>
+      </br>
+      The query on the left will check the prerequisite rule, using default value <code>"CSSE2310"</code>, 
+      and other two course code <code>"CSSE2002"</code> <code>"COMP3506"</code>. Return true if the student completed courses
+      satisfy the the prerequisite rule of the input course code.
+      </p>
+    </div>
+    <div class="col-sm-8">
+      <figure>
+        <pre class="highlight pre-scrollable code runnable">
+        CREATE (s: Student {Name: "Peter", CompletedUnites: 
+            ["CSSE1001", "CSSE2010", "INFS1200", "MATH1050"]})
+        </pre>
+      </figure>
+      <figcaption>Insert Peter's information</figcaption>
+      <br> 
+      <label>Course code: </label>
+      <input value-for="p1" id="p1" class="form-control" value="CSSE2310" size="25">
+      <br> 
+      <figure>
+        <pre class="pre-scrollable code runnable">
+        MATCH (s: Student{Name: "Peter"}), 
+          (u: Unites{code: '<span value-key="p1">CSSE2310</span>'})
+          WITH s.CompletedUnites as cu, u
+          WITH split(u.prerequisites, "AND")as pre, cu
+          RETURN
+          CASE SIZE(pre)
+          WHEN 2
+          THEN ANY(x IN cu WHERE pre[0] contains x) AND 
+          ANY(x IN cu WHERE pre[1] contains x)
+          WHEN 1
+          THEN ANY(x IN cu WHERE pre[0] contains x)
+          ELSE false
+          END as result
+        </pre>
+      </figure>
+      <figcaption>Check the prerequisite rule</figcaption> 
+    </div>
+  </slide>
+
+  <slide class="row-fluid">
+    <div class="col-sm-3">
+      <h3>Graduation Checking</h3>
+    <p>In this slide, it will write a query to insert one student’s information in the graph. The student have completed the degree’s total credit points requirement but
+does not meet some level’s credit points requirements.  The query will check which rule the student did not meet.
+    </p>
+    <p></br></br></br></br></br></br></br></br></br></br></br>
+    </p>
+    </div>
+    <div class="col-sm-8">
+      <figure>
+        <pre class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding">
+        CREATE (s: Student {Name: "Steven", Level_1000: [
+          "CSSE1001","INFS1200", "MATH1061", "DECO1400", 
+          "MATH1051", "MATH1050", "ENGG1001", "ECON1010", 
+          "JAPN1011"], Level_2000: ["COMP2048", "CSSE2002", 
+          "CSSE2010", "CSSE2310", "DECO2500", "INFS2200", 
+          "SCIE2100"], Level_3000: ["DECO3801", "COMP3506",
+          "COMS3200", "CYBR3000", "COMP3501"], Level_4000:
+          ["COMP4702", "COMP4500","BISM4203"], Total_cp: 144})
+        </pre>
+      </figure>
+      <figcaption>Insert Steven's information</figcaption>
+    </div>
+
+    <div class="col-sm-8">
+      <figure>
+        <pre class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding">
+        MATCH (s: Student{Name: "Steven"})
+          RETURN SIZE(s.Level_1000) >= 8 as level_1000_checking, 
+          SIZE(s.Level_2000) >= 6 as level_2000_checking,
+          SIZE(s.Level_3000) >= 6 as level_3000_checking,
+          s.Total_cp >= 144 as total_cp_checking
+        </pre>
+      </figure>
+      <figcaption>Check rules</figcaption>
+    </div>
+  </slide>
+
+  <slide class="row-fluid">
+    <div class="col-sm-3">
+      <h3>Indirect Prerequisite</h3>
+      <p>In this slide, it write a query to find all 1000 level indirect prerequisite units of a given unit and print out the prerequisite chain from the unit to the 1000 level indirect prerequisite unit.
+      which has chain length from 2 to 3. The default unite code is <code>"COMP4500"</code>, and <code>"MATH1061"</code> maximum chain length of 2 to "COMP4500".
+      <code>"CSSE1001", "ENGG1001", "MATH1051"</code> have maximum chain length of 2 to "COMP4500"
+      </p>
+
+    </div>
+
+    <div class="col-sm-8">
+      <label>Course code: </label>
+      <input value-for="p1" id="p1" class="form-control" value="COMP4500" size="25">
+      <br>
+      <figure>
+        <pre class="pre-scrollable code runnable">
+        MATCH p = (course) - [:PREREQUISITE *2..3] -> (preCourse)
+          WHERE course.code = '<span value-key="p1">COMP4500</span>' AND 
+          substring(preCourse.code, 4, 1) = '1'
+          RETURN p
+		    </pre>
+      </figure>
+      <figcaption>Check chain length from 2 to 3</figcaption>
+    </div>
+  </slide>
+
+  <slide class="row-fluid">
+    <div class="col-sm-3">
+      <h3>Foundational Unit</h3>
+      <p>In this slide, it will write a query to find the unit(s) appearing in most other unit’s direct or indirect prerequisite list.
+      The query will return node with the appering times.
+      </p>
+
+    </div>
+
+    <div class="col-sm-8">
+      <figure>
+        <pre class="pre-scrollable code runnable">
+        MATCH () - [:PREREQUISITE *] -> (preCourse) 
+          WITH preCourse, count(preCourse) as times
+          ORDER BY times DESC
+          RETURN collect(preCourse)[0] as course, max(times)
+		    </pre>
+      </figure>
+      <figcaption>Find node and appering times</figcaption>
+    </div>
+  </slide>
+
+  <slide class="row-fluid">
+    <div class="col-sm-3">
+      <h3>Clear the Graph</h3>
+      <p> In this slide, it will write a query to delete all nodes and their
+      relationships in the graph.
+
+      </p>
+
+    </div>
+
+    <div class="col-sm-8">
+      <figure>
+        <pre class="pre-scrollable code runnable">
+        MATCH (n)
+          DETACH DELETE n
+		    </pre>
+      </figure>
+      <figcaption>Find node and appering times</figcaption>
+    </div>
+  </slide>
+</carousel>
+</article>
